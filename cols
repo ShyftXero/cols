@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+# this is to address a frustration with using awk and cut
+# 16DEC19
+# shyft
+
+"""
+ ~/Dropbox/code/cols                                                                                       anaconda3 🐍 ─╮
+❯ echo how now brown cow | ./cols.py 1,2,1,1,1,2,3,4,5,6,,8,,,,,5                                                         ─╯
+how now how how how now brown cow 
+"""
+
+
+def showCols(cols, sep=' '):
+
+    data = open('/dev/stdin').readlines()
+    # print(data)
+    # print(f'showing cols: {cols}')
+
+    for line in data:
+        # line = line.replace('\n','') # remove trailing newline
+        line = line[:-1]  # same as above      
+        line = line.split(sep)
+        for col in cols:
+            try:
+                print(f'{line[col-1]} ', end='')
+            except IndexError:
+                # column doesn't exist; carry on
+                pass
+            except BaseException as e:
+                # some other error; carry on
+                # print(e)
+                pass
+        print()
+
+
+def csv_int(string):
+    # custom handling of a comma separated list of integers
+    # https://www.tuxevara.de/2015/01/pythons-argparse-and-lists/
+   return [int(x) for x in string.split(',') if x != '']
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("cols", help="the columns you want to display", type=csv_int ) # custom handler
+    parser.add_argument("--sep", help="separator/delimeter string", default=' ', type=str)
+    args = parser.parse_args()
+    
+    showCols(args.cols, sep=args.sep)
+
