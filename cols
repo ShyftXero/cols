@@ -12,7 +12,8 @@ how now how how how now brown cow
 """
 
 
-def showCols(cols, sep=' '):
+def showCols(cols, sep=' ', replace=''):
+    #TODO IMPLEMENT THE REPLACE FUNCTIONALITY
 
     data = open('/dev/stdin').readlines()
     # print(data)
@@ -20,9 +21,15 @@ def showCols(cols, sep=' '):
 
     for line in data:
         # line = line.replace('\n','') # remove trailing newline
+
         line = line[:-1]  # same as above      
-        line = line.split(sep)
+        line = line.split(sep) # break the lines up based on some delimeter. default space
+        line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
+
         for col in cols:
+            # if col == "": # if there were two consecutive occurences of the delimeter
+            #     continue # move on to the next column to process
+
             try:
                 print(f'{line[col-1]} ', end='')
             except IndexError:
@@ -45,7 +52,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("cols", help="the columns you want to display", type=csv_int ) # custom handler
     parser.add_argument("--sep", help="separator/delimeter string", default=' ', type=str)
+    parser.add_argument("--replace", help='replace X with Y: e.g. --replace "\s \t"  to replace all spaces with tabs', default='', type=str)
+    
     args = parser.parse_args()
+
     
     showCols(args.cols, sep=args.sep)
 
