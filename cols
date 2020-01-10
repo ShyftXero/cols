@@ -11,6 +11,19 @@ Dont forget to add it to your path
 how now how how how now brown cow 
 """
 
+def hideCols(cols, sep=' ', replace=''):
+    data = open('/dev/stdin').readlines()
+    # print('data = ', data)
+    for line in data:
+        # line = line.replace('\n','') # remove trailing newline
+
+        line = line[:-1]  # same as above      
+        line = line.split(sep) # break the lines up based on some delimeter. default space
+        line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
+        line = [ val for idx, val in enumerate(line) if idx+1 not in cols ]
+        # include in the line the values where the index of the value_of_col+1 IS NOT in the list of columns to omit. 
+        print(f'{sep}'.join(line))
+
 
 def showCols(cols, sep=' ', replace=''):
     #TODO IMPLEMENT THE REPLACE FUNCTIONALITY
@@ -20,26 +33,16 @@ def showCols(cols, sep=' ', replace=''):
     # print(f'showing cols: {cols}')
 
     for line in data:
-        # line = line.replace('\n','') # remove trailing newline
-
         line = line[:-1]  # same as above      
         line = line.split(sep) # break the lines up based on some delimeter. default space
         line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
 
-        for col in cols:
-            # if col == "": # if there were two consecutive occurences of the delimeter
-            #     continue # move on to the next column to process
+        line = [ val for idx, val in enumerate(line) if idx+1 in cols ]
+        # include in the line the values where the index of the value_of_col+1 IS in the list of columns to show.
+        print(f'{sep}'.join(line))
 
-            try:
-                print(f'{line[col-1]} ', end='')
-            except IndexError:
-                # column doesn't exist; carry on
-                pass
-            except BaseException as e:
-                # some other error; carry on
-                # print(e)
-                pass
-        print()
+  
+
 
 
 def csv_int(string):
@@ -49,13 +52,17 @@ def csv_int(string):
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="this is to address a frustration with using awk and cut")
     parser.add_argument("cols", help="the columns you want to display", type=csv_int ) # custom handler
-    parser.add_argument("--sep", help="separator/delimeter string", default=' ', type=str)
-    parser.add_argument("--replace", help='replace X with Y: e.g. --replace "\s \t"  to replace all spaces with tabs', default='', type=str)
-    
+    parser.add_argument("--sep",'-s', help="separator/delimeter string", default=' ', type=str)
+    parser.add_argument("--replace",'-r', help='replace X with Y: e.g. --replace "\\s \\t"  to replace all spaces with tabs', default='', type=str)
+    parser.add_argument("--not",'-n','--hide', dest='hide', action='store_true',  help="show all columns except these columns; hide these cols", default=False)
+
     args = parser.parse_args()
 
-    
-    showCols(args.cols, sep=args.sep)
+    if args.hide == True:
+        # print('hiding')
+        hideCols(args.cols, sep=args.sep)
+    else:
+        showCols(args.cols, sep=args.sep)
 
