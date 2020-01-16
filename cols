@@ -11,18 +11,18 @@ Dont forget to add it to your path
 how now how how how now brown cow 
 """
 
-def hideCols(cols, sep=' ', replace=''):
-    data = open('/dev/stdin').readlines()
-    # print('data = ', data)
-    for line in data:
-        # line = line.replace('\n','') # remove trailing newline
+# def hideCols(cols, sep=' ', replace=''):
+#     data = open('/dev/stdin').readlines()
+#     # print('data = ', data)
+#     for line in data:
+#         # line = line.replace('\n','') # remove trailing newline
 
-        line = line[:-1]  # same as above      
-        line = line.split(sep) # break the lines up based on some delimeter. default space
-        line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
-        line = [ val for idx, val in enumerate(line) if idx+1 not in cols ]
-        # include in the line the values where the index of the value_of_col+1 IS NOT in the list of columns to omit. 
-        print(f'{sep}'.join(line))
+#         line = line[:-1]  # same as above      
+#         line = line.split(sep) # break the lines up based on some delimeter. default space
+#         line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
+#         line = [ val for idx, val in enumerate(line) if idx+1 not in cols ] # this whole function is reduced to an if. 
+#         # include in the line the values where the index of the value_of_col+1 IS NOT in the list of columns to omit. 
+#         print(f'{sep}'.join(line))
 
 
 def showCols(cols, sep=' ', replace=''):
@@ -37,7 +37,10 @@ def showCols(cols, sep=' ', replace=''):
         line = line.split(sep) # break the lines up based on some delimeter. default space
         line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
 
-        line = [ val for idx, val in enumerate(line) if idx+1 in cols ]
+        if args.hide == True:
+            line = [ val for idx, val in enumerate(line) if idx+1 not in cols ] 
+        else:
+            line = [ val for idx, val in enumerate(line) if idx+1 in cols ]
         # include in the line the values where the index of the value_of_col+1 IS in the list of columns to show.
         print(f'{sep}'.join(line))
 
@@ -60,9 +63,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.hide == True:
-        # print('hiding')
-        hideCols(args.cols, sep=args.sep)
-    else:
-        showCols(args.cols, sep=args.sep)
+    # if args.hide == True:
+    #     # print('hiding')
+    #     hideCols(args.cols, sep=args.sep)
+    # else:
+    showCols(args.cols, sep=args.sep)
 
