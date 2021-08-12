@@ -9,8 +9,8 @@ Currently I run the script above like
 $ pythonscript textfilename1 > 
 
 here are some tabs
-                spaces before me
-				tabs before me
+                spaces before me    spaces before me too
+				tabs before me     tabs separate    me
 end of tabs                     
 
 ❯ ps -ef                                                                                                                 

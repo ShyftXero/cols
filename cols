@@ -2,7 +2,7 @@
 # this is to address a frustration with using awk and cut
 # 16DEC19
 # shyft
-
+import re
 """
 Dont forget to add it to your path
 
@@ -24,17 +24,26 @@ how now how how how now brown cow
 #         # include in the line the values where the index of the value_of_col+1 IS NOT in the list of columns to omit. 
 #         print(f'{sep}'.join(line))
 
-
 def showCols(cols, sep=' ', replace=''):
     #TODO IMPLEMENT THE REPLACE FUNCTIONALITY
+    # if args != None:
+    #     sep = args.sep
+    if r'\x' in sep:
+        sep = chr(int(sep[2:]))
+    
 
     data = open('/dev/stdin').readlines()
-    # print(data)
-    # print(f'showing cols: {cols}')
+    # print(data)"\s"
 
     for line in data:
-        line = line[:-1]  # same as above      
-        line = line.split(sep) # break the lines up based on some delimeter. default space
+        line = line[:-1]  # same as above
+        line = re.subn(f"{sep}",' ',line)[0]
+
+        # line = line.replace(sep * 4 , "")
+        # line = line.replace(sep * 3 , "")
+        # line = line.replace(sep * 2 , "")
+        # line = line.replace(sep     , " ")      
+        line = line.split() # break the lines up based on some delimeter. default space
         line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
 
         if args.hide == True:
@@ -42,7 +51,9 @@ def showCols(cols, sep=' ', replace=''):
         else:
             line = [ val for idx, val in enumerate(line) if idx+1 in cols ]
         # include in the line the values where the index of the value_of_col+1 IS in the list of columns to show.
-        print(f'{sep}'.join(line))
+        # print(line)
+        if len(line) > 0:
+            print(f'{sep}'.join(line))
 
   
 
@@ -62,6 +73,7 @@ if __name__ == '__main__':
     parser.add_argument("--not",'-n','--hide', dest='hide', action='store_true',  help="show all columns except these columns; hide these cols", default=False)
 
     args = parser.parse_args()
+    # print('sep', args.sep)
 
     # if args.hide == True:
     #     # print('hiding')
