@@ -7,7 +7,7 @@ ps -ef | cols 1,4
 
 # Usage
 ```
-usage: cols [-h] [--sep SEP] [--replace REPLACE] [--skip-first SKIP_FIRST] [--not] cols
+usage: cols [-h] [--delim DELIM] [--replace REPLACE] [--skip-first SKIP_FIRST] [--not] cols
 
 this is to address a frustration with using awk and cut
 
@@ -16,10 +16,12 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --sep SEP, -s SEP     separator/delimeter string
+  --delim DELIM, -d DELIM
+                        delimiter string
   --replace REPLACE, -r REPLACE
                         replace X with Y: e.g. --replace "\s \t" to replace all spaces with tabs
   --skip-first SKIP_FIRST, --skip SKIP_FIRST
                         skip first N lines; omit a header
   --not, -n, --hide     show all columns except these columns; hide these cols
+
 ```
