@@ -1,82 +1,86 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # this is to address a frustration with using awk and cut
-# 16DEC19
+# 12AUG21
 # shyft
+
+import argparse
 import re
-"""
-Dont forget to add it to your path
+import codecs 
+from rich import print
+from rich.table import Table
+from rich.console import Console
 
-❯ echo how now brown cow | ./cols.py 1,2,1,1,1,2,3,4,5,6,,8,,,,,5                                                         ─╯
-how now how how how now brown cow 
-"""
 
-# def hideCols(cols, sep=' ', replace=''):
-#     data = open('/dev/stdin').readlines()
-#     # print('data = ', data)
-#     for line in data:
-#         # line = line.replace('\n','') # remove trailing newline
 
-#         line = line[:-1]  # same as above      
-#         line = line.split(sep) # break the lines up based on some delimeter. default space
-#         line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
-#         line = [ val for idx, val in enumerate(line) if idx+1 not in cols ] # this whole function is reduced to an if. 
-#         # include in the line the values where the index of the value_of_col+1 IS NOT in the list of columns to omit. 
-#         print(f'{sep}'.join(line))
+def unescaped_str(arg_str):
+    return codecs.decode(str(arg_str), 'unicode_escape')
 
-def showCols(cols, sep=' ', replace=''):
+def get_lines():
+    with open('/dev/stdin') as f:
+        data = f.readlines()
+    return data
+
+def showCols(data, cols=[], delim=' ', skip_first=0, replace=''):
     #TODO IMPLEMENT THE REPLACE FUNCTIONALITY
-    # if args != None:
-    #     sep = args.sep
-    if r'\x' in sep:
-        sep = chr(int(sep[2:]))
+
+    # delim = delim.replace(r'\\t', '\t' )
+    if r'\x' in delim:
+        delim = chr(int(delim[2:]))
     
-
-    data = open('/dev/stdin').readlines()
-    # print(data)"\s"
-
+    print('delim = ', repr(delim.encode()))
+    
+    table = Table(expand=True,box=None, show_header=False, header_style=None)
+    
+    for _ in cols:
+        table.add_column()
+    out = []
     for line in data:
         line = line[:-1]  # same as above
-        line = re.subn(f"{sep}",' ',line)[0]
+        line = line.strip()
+        # line = re.subn(f"{delim}",' ',line)[0]
+        if line == '':
+            continue
+        
+        if delim == ' ':
+            line = line.split() # break the lines up based on some delimeter. default space
+        else:
+            line = line.split(delim)
 
-        # line = line.replace(sep * 4 , "")
-        # line = line.replace(sep * 3 , "")
-        # line = line.replace(sep * 2 , "")
-        # line = line.replace(sep     , " ")      
-        line = line.split() # break the lines up based on some delimeter. default space
-        line = [x for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
+        line = [x.strip() for x in line if x != ''] # filter out empty elements; replaces the conditional in the for block
 
         if args.hide == True:
-            line = [ val for idx, val in enumerate(line) if idx+1 not in cols ] 
+            line = [ val for idx, val in enumerate(line,start=1) if idx not in cols ] 
         else:
-            line = [ val for idx, val in enumerate(line) if idx+1 in cols ]
-        # include in the line the values where the index of the value_of_col+1 IS in the list of columns to show.
-        # print(line)
-        if len(line) > 0:
-            print(f'{sep}'.join(line))
-
-  
-
+            line = [ val for idx, val in enumerate(line, start=1) if idx in cols ]
+        
+        out.append(line)
+    
+    for line in out[skip_first:]:
+        print(f'{delim}'.join(line))
+        # print(*line)
 
 
 def csv_int(string):
-    # custom handling of a comma separated list of integers
+    # custom handling of a comma delimarated list of integers
     # https://www.tuxevara.de/2015/01/pythons-argparse-and-lists/
-   return [int(x) for x in string.split(',') if x != '']
+    seq = [int(x) for x in string.split(',') if x != '']
+    # print(seq)
+    return seq
+
 
 if __name__ == '__main__':
-    import argparse
+
     parser = argparse.ArgumentParser(description="this is to address a frustration with using awk and cut")
     parser.add_argument("cols", help="the columns you want to display", type=csv_int ) # custom handler
-    parser.add_argument("--sep",'-s', help="separator/delimeter string", default=' ', type=str)
+    parser.add_argument("--delim",'-d', help="delimiter string", default=' ', type=unescaped_str)
     parser.add_argument("--replace",'-r', help='replace X with Y: e.g. --replace "\\s \\t"  to replace all spaces with tabs', default='', type=str)
+    parser.add_argument("--skip-first",'--skip', help="skip first N lines; omit a header", default=0, type=int)
     parser.add_argument("--not",'-n','--hide', dest='hide', action='store_true',  help="show all columns except these columns; hide these cols", default=False)
 
-    args = parser.parse_args()
-    # print('sep', args.sep)
 
-    # if args.hide == True:
-    #     # print('hiding')
-    #     hideCols(args.cols, sep=args.sep)
-    # else:
-    showCols(args.cols, sep=args.sep)
+    args = parser.parse_args()
+    
+    data = get_lines()
+    
+    showCols(data, cols=args.cols, delim=args.delim, skip_first=args.skip_first)
 
