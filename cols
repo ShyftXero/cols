@@ -27,7 +27,7 @@ def showCols(data, cols=[], delim=' ', skip_first=0, replace=''):
     if r'\x' in delim:
         delim = chr(int(delim[2:]))
     
-    print('delim = ', repr(delim.encode()))
+    #print('delim = ', repr(delim.encode()))
     
     table = Table(expand=True,box=None, show_header=False, header_style=None)
     
