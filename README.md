@@ -12,7 +12,7 @@ usage: cols [-h] [--delim DELIM] [--replace REPLACE] [--skip-first SKIP_FIRST] [
 this is to address a frustration with using awk and cut
 
 positional arguments:
-  cols                  the columns you want to display
+  cols                  the columns you want to display; comma separated with no spaces
 
 optional arguments:
   -h, --help            show this help message and exit
